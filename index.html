@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="shortcut icon" href="icon.webp" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body{
+            background:#F3732F;
+            display: flex; 
+            justify-content: center;   
+        }
+        .con{
+            position: relative;
+            display: flex;
+            flex-direction: column; 
+            padding: 30px;
+            background: #F9F7F3;
+            border-radius: 7px;
+            width: 400px;
+        }
+        #btn{
+                font-weight: bolder;
+                outline: none;
+                border: none;
+                padding:10px;
+                margin: 20px;
+                cursor: pointer;
+                background:#F3732F;
+                color: aliceblue;
+                border-radius: 5px;
+        }
+        h4{
+            color: #F3732F;
+            font-size: larger;
+            text-align: center;
+        }
+        #box{
+           margin-left: 40px;
+            
+        }
+        #box #txt{
+            outline: none;
+            border: 1px solid #F3732F;
+            border-radius: 4px;
+            padding: 10px;   
+            
+        }
+        #task{
+            text-transform: capitalize;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid #F3732F;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        p{
+            margin: 10px;
+        }
+        i{
+            cursor: pointer;
+            margin: 15px;
+            color: #F3732F;
+        }
+        #task:hover{
+            box-shadow: 3px 5px 12px -1px rgba(0,0,0,0.25);
+        }
+        
+        
+       
+    </style>
+</head>
+<body> 
+    <div class="con">
+        <h4>To-Do List</h4>
+
+        <div id="box">
+        <input type="text" value="" id="txt" autocomplete="off" placeholder="Enter Your Task">
+        <button id="btn" onclick="create()">Add Task</button>
+        </div>
+    </div>
+     
+    <script>
+
+        var txt = document.getElementById('txt');
+        var box = document.getElementById('box');
+        var div;   
+        var add=1;
+        
+     document.addEventListener("DOMContentLoaded",()=>{
+        const todo = [...JSON.parse(localStorage.getItem("To-Do"))];
+       
+        todo.forEach((item)=>{
+            div = document.createElement('div');
+            div.setAttribute("id","task");
+            box.appendChild(div);
+
+            var para = document.createElement("p");
+            para.innerHTML =`${item.Todo}`;
+            div.appendChild(para);
+
+            var i = document.createElement("i");
+            i.setAttribute("class","fa-solid fa-trash")
+            i.setAttribute("onClick","remove(this.parentNode)")
+            div.appendChild(i);
+            add++; 
+        })
+     })
+
+document.addEventListener("keyup",(e)=>{
+    if(e.keyCode == '13'){
+       create();
+    }
+})
+        function create(){
+            if(!txt.value==""||txt.value==null){
+            div = document.createElement('div');
+            div.setAttribute("id","task");
+            box.appendChild(div);
+
+            var para = document.createElement("p");
+            para.innerHTML =`${txt.value}`;
+            div.appendChild(para);
+
+            var i = document.createElement("i");
+            i.setAttribute("class","fa-solid fa-trash")
+            i.setAttribute("onClick","remove(this.parentNode)")
+            div.appendChild(i); 
+            add++;
+//localStroage..................................
+           localStorage.setItem("To-Do",
+           JSON.stringify(
+            [...JSON.parse(localStorage.getItem("To-Do")||"[]"),{Todo:txt.value}]
+            )
+           );
+            txt.value="";
+            }else{
+                Swal.fire({
+                    title: "please enter your task",
+                    icon: "question",
+                    timer: 1500,
+                   showConfirmButton: false
+                  });
+            }   
+        }
+        
+        function remove(x){
+            Swal.fire({ title: "Are you sure?",icon: "warning",showCancelButton: true, confirmButtonColor: "#3085d6",cancelButtonColor: "#d33",confirmButtonText: "Yes, delete it!",})
+            .then((result) => {
+                if (result.isConfirmed){
+                    x.remove(); 
+                  //remove from localStorage..................................
+                      const todo = [...JSON.parse(localStorage.getItem("To-Do"))];
+                            todo.forEach((item)=>{
+                            if(item.Todo === x.innerText){
+                                     todo.splice(todo.indexOf(item),1)
+                                 }
+                            })
+                  localStorage.setItem("To-Do",JSON.stringify(todo));
+                  Swal.fire({
+                    title: "Your Task is Deleted!",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500,
+                  });
+                }
+              });
+        }
+         
+          
+    </script>
+</body>
+</html>
